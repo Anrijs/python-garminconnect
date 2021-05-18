@@ -4,6 +4,7 @@ import logging
 import json
 import re
 import requests
+import cloudscraper
 from enum import Enum, auto
 
 from .__version__ import __version__
@@ -29,7 +30,7 @@ class Garmin(object):
         global SIGNIN_URL
         self.email = email
         self.password = password
-        self.req = requests.session()
+        self.req = cloudscraper.CloudScraper()
         self.logger = logging.getLogger(__name__)
         self.display_name = ""
         self.full_name = ""
@@ -107,6 +108,9 @@ class Garmin(object):
         self.logger.debug(
             "Login to Garmin Connect using POST url %s", SIGNIN_URL)
         try:
+            response = self.req.get(
+                SIGNIN_URL, headers=self.headers, params=params)
+
             response = self.req.post(
                 SIGNIN_URL, headers=self.headers, params=params, data=data)
             if response.status_code == 429:
